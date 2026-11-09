@@ -1,0 +1,22 @@
+{
+  "source_commit": "46834a6a7245ad5eff5d531092d7835154dbc62f",
+  "workflow": "pricing-workshop-v1",
+  "notebooks_executed": 3,
+  "tests_passed": 15,
+  "demand_multipliers": [
+    0.6,
+    1.0,
+    1.2
+  ],
+  "price_table_rows": 2013,
+  "figures": 4,
+  "checks": [
+    "only three parameter inputs",
+    "no legacy modules or raw data in generated workspace",
+    "single-period and recursive-tree expected revenues checked",
+    "zero inventory closes sales",
+    "finite non-negative expected revenues",
+    "price grid membership",
+    "additional inventory and selling periods do not reduce expected revenue"
+  ]
+}

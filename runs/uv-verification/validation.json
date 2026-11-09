@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-08",
+  "python": "3.14.10",
+  "uv": "0.13.7",
+  "platform": "macOS-15.7.3-arm64-arm-64bit-Mach-O",
+  "unit_tests_passed": 9,
+  "skill_validation": "passed",
+  "audit": {
+    "tool": "pip-audit 2.10.1",
+    "packages": 120,
+    "known_vulnerabilities": 0
+  },
+  "notebooks": [
+    {
+      "notebook": "01_synthetic_scenario_setup.ipynb",
+      "seconds": 1.32
+    },
+    {
+      "notebook": "workshop-run/02_scenario_distributions.ipynb",
+      "seconds": 1.72
+    },
+    {
+      "notebook": "workshop-run/03_estimate_optimized_price_table.ipynb",
+      "seconds": 2.01
+    }
+  ],
+  "result_rows": 2013,
+  "figures": [
+    "fig/distributions/01_willingness_to_pay.png",
+    "fig/distributions/02_arrival_probabilities.png",
+    "fig/pricing/price_comparison.png",
+    "fig/pricing/price_tables.png"
+  ],
+  "matches_historical_price_and_revenue_table": {
+    "rtol": 1e-12,
+    "atol": 1e-09
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "seaborn": "0.13.2",
+    "PyYAML": "6.0.3",
+    "jupyterlab": "4.6.6",
+    "nbclient": "0.11.0",
+    "ipykernel": "7.4.0"
+  }
+}

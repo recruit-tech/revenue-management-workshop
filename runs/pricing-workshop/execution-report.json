@@ -1,0 +1,14 @@
+[
+  {
+    "notebook": "01_synthetic_scenario_setup.ipynb",
+    "seconds": 1.65
+  },
+  {
+    "notebook": "02_scenario_distributions.ipynb",
+    "seconds": 2.3
+  },
+  {
+    "notebook": "03_estimate_optimized_price_table.ipynb",
+    "seconds": 2.32
+  }
+]

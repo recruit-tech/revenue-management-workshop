@@ -1,0 +1,16 @@
+# Invented assumptions for a deterministic hotel pricing workshop.
+name: pricing_demo
+leadtime: 60
+capacity: 10
+people: 18
+price_interval: 1000
+mt_multiplier: [0.6, 1.0, 1.2]
+wtp:
+  mean: 18000
+  std: 6000
+price:
+  min: 5000
+  max: 35000  # Exclusive upper bound.
+arrival:
+  log_mean: 3.0
+  log_std: 0.8

@@ -1,0 +1,14 @@
+.DS_Store
+.ipynb_checkpoints
+.venv/
+__pycache__/
+
+workshop-run*/
+
+.tools/
+.jupyter-local/
+
+# Client research data is not part of the synthetic workshop.
+data/
+.env
+.env.*
