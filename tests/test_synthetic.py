@@ -22,22 +22,22 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(set(models), {'opt_table_params', 'wtp_parameters', 'visit_curve'})
         self.assertEqual(config['workflow'], 'pricing-workshop-v1')
         self.assertEqual(set(config), {'leadtime', 'capacity', 'people', 'price_interval',
-                                      'mt_multiplier', 'input_source', 'scenario', 'workflow'})
+                                      'lambda_multiplier', 'input_source', 'scenario', 'workflow'})
         weights = models['visit_curve'].visit.to_numpy()
         self.assertAlmostEqual(weights.sum(), 1)
         self.assertEqual(len(weights), self.scenario['leadtime'] + 1)
-        for multiplier in config['mt_multiplier']:
+        for multiplier in config['lambda_multiplier']:
             probabilities = weights * config['people'] * multiplier
             self.assertTrue(((probabilities >= 0) & (probabilities <= 1)).all())
             self.assertAlmostEqual(probabilities.sum(), config['people'] * multiplier)
 
     def test_invalid_inputs_are_rejected(self):
         for section, key, value in (
-            ('arrival', 'people', 1000), ('arrival', 'mt_multiplier', [1.0, 1.0]),
-            ('arrival', 'mt_multiplier', [0.6]), ('price', 'price_interval', 0),
+            ('arrival', 'people', 1000), ('arrival', 'lambda_multiplier', [1.0, 1.0]),
+            ('arrival', 'lambda_multiplier', [0.6]), ('price', 'price_interval', 0),
             ('price', 'price_interval', 1.5), ('arrival', 'unknown', 1),
             (None, 'capacity', 0), (None, 'simulation_num', 100),
-            (None, 'people', 18), (None, 'mt_multiplier', [1.0]),
+            (None, 'people', 18), (None, 'lambda_multiplier', [1.0]),
             (None, 'price_interval', 1000),
         ):
             scenario = copy.deepcopy(self.scenario)
@@ -48,11 +48,11 @@ class SyntheticTests(unittest.TestCase):
                     build_parameters(scenario)
 
     def test_nested_parameters_reach_runtime(self):
-        self.scenario['arrival'].update(people=12, mt_multiplier=[0.5, 1.0])
+        self.scenario['arrival'].update(people=12, lambda_multiplier=[0.5, 1.0])
         self.scenario['price']['price_interval'] = 500
         config, models = build_parameters(self.scenario)
         self.assertEqual(config['people'], 12)
-        self.assertEqual(config['mt_multiplier'], [0.5, 1.0])
+        self.assertEqual(config['lambda_multiplier'], [0.5, 1.0])
         self.assertEqual(config['price_interval'], 500)
         self.assertEqual(models['opt_table_params'], [5000, 35000, 500])
 

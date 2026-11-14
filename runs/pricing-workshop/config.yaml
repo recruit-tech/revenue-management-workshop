@@ -1,7 +1,7 @@
 capacity: 10
 input_source: synthetic
 leadtime: 60
-mt_multiplier:
+lambda_multiplier:
 - 0.6
 - 1.0
 - 1.2

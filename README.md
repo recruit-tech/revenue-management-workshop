@@ -175,7 +175,7 @@ The normal WTP model is not truncated; a negative WTP does not accept positive
 prices. Arrival timing, WTP and price acceptance follow the stated exogenous
 assumptions. Accepted bookings also depend on room availability.
 
-Scenario demand multipliers are set in `arrival.mt_multiplier`. Generated `config.yaml` keeps its flat runtime format; regenerate your workspace after editing the scenario.
+Scenario demand multipliers are set in `arrival.lambda_multiplier`. Generated `config.yaml` uses the same `lambda_multiplier` name in its flat runtime format. Regenerate existing workspaces to update their configuration and notebooks.
 
 ### Optimal pricing
 

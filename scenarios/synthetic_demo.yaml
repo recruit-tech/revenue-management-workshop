@@ -19,6 +19,6 @@ arrival:
   # Expected potential customers over the whole booking horizon at demand x 1, not bookings.
   # Arrival timing distributes them across days; price acceptance and availability determine bookings.
   people: 18
-  mt_multiplier: [0.6, 1.0, 1.2]  # Demand multipliers; unique, positive, including 1.0.
+  lambda_multiplier: [0.6, 1.0, 1.2]  # Demand multipliers; unique, positive, including 1.0.
   log_mean: 3.0  # Mean of log(lead time), not days; larger means earlier arrivals.
   log_std: 0.8  # Standard deviation of log(lead time), not days.

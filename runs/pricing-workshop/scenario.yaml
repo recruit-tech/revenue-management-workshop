@@ -1,18 +1,18 @@
 arrival:
+  lambda_multiplier:
+  - 0.6
+  - 1.0
+  - 1.2
   log_mean: 3.0
   log_std: 0.8
+  people: 18
 capacity: 10
 leadtime: 60
-mt_multiplier:
-- 0.6
-- 1.0
-- 1.2
 name: pricing_demo
-people: 18
 price:
   max: 35000
   min: 5000
-price_interval: 1000
+  price_interval: 1000
 wtp:
   mean: 18000
   std: 6000
