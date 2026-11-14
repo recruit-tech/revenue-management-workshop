@@ -73,7 +73,7 @@ class PricingTests(unittest.TestCase):
         low, high, step = models['opt_table_params']
         tables = {}
         for multiplier in config['lambda_multiplier']:
-            tables[multiplier], values = self.calculate(models['visit_curve'].visit * config['people'] * multiplier,
+            tables[multiplier], values = self.calculate(models['visit_curve'].visit * config['expected_total_arrivals'] * multiplier,
                                                          np.arange(low, high, step), *models['wtp_parameters'], config['capacity'])
             self.assertTrue((np.diff(values, axis=0) >= -1e-8).all())
             self.assertTrue((np.diff(values, axis=1) >= -1e-8).all())

@@ -5,7 +5,7 @@ arrival:
   - 1.2
   log_mean: 3.0
   log_std: 0.8
-  people: 18
+  expected_total_arrivals: 18
 capacity: 10
 leadtime: 60
 name: pricing_demo

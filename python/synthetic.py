@@ -28,13 +28,13 @@ def build_parameters(scenario):
     for section, fields in {
         'wtp': {'mean', 'std'},
         'price': {'min', 'max', 'price_interval'},
-        'arrival': {'people', 'lambda_multiplier', 'log_mean', 'log_std'},
+        'arrival': {'expected_total_arrivals', 'lambda_multiplier', 'log_mean', 'log_std'},
     }.items():
         if not isinstance(s[section], dict) or set(s[section]) != fields:
             raise ValueError(f'{section} fields must be exactly: {sorted(fields)}')
     for key in ('leadtime', 'capacity'):
         _number(s[key], key, integer=True, positive=True)
-    _number(s['arrival']['people'], 'arrival.people', positive=True)
+    _number(s['arrival']['expected_total_arrivals'], 'arrival.expected_total_arrivals', positive=True)
     _number(s['price']['price_interval'], 'price.price_interval', integer=True, positive=True)
     multipliers = s['arrival']['lambda_multiplier']
     if not isinstance(multipliers, list) or not multipliers:
@@ -56,11 +56,11 @@ def build_parameters(scenario):
     if not np.isfinite(weights.sum()) or weights.sum() <= 0:
         raise ValueError('Arrival distribution has no representable mass in the horizon')
     weights /= weights.sum()
-    if weights.max() * s['arrival']['people'] * max(multipliers) > 1:
-        raise ValueError('Arrival probability exceeds 1; reduce people/multipliers or broaden the arrival curve')
+    if weights.max() * s['arrival']['expected_total_arrivals'] * max(multipliers) > 1:
+        raise ValueError('Arrival probability exceeds 1; reduce expected_total_arrivals/multipliers or broaden the arrival curve')
     # Flatten the scenario settings for the generated workshop configuration.
     config = {key: s[key] for key in ('leadtime', 'capacity')}
-    config.update(people=s['arrival']['people'], lambda_multiplier=multipliers,
+    config.update(expected_total_arrivals=s['arrival']['expected_total_arrivals'], lambda_multiplier=multipliers,
                   price_interval=s['price']['price_interval'])
     config.update(input_source='synthetic', scenario=s['name'], workflow='pricing-workshop-v1')
     models = {

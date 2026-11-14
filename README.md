@@ -165,9 +165,9 @@ fields are rejected so that obsolete configuration is not silently ignored.
   an exclusive upper bound. The lowest price wins a tie.
 - `arrival.log_mean` and `arrival.log_std` define a lognormal arrival-time variable.
   Daily mass integrates intervals $[t,t+1)$, then normalises over the horizon.
-- `arrival.people` is the expected number of potential arrivals at demand multiplier 1.
+- `arrival.expected_total_arrivals` is the expected number of potential arrivals at demand multiplier 1.
 - Daily arrival probability is $a_t = w_t N m$, and must be at
-  most one. Here $w_t$ is the timing weight, $N$ is `arrival.people`, and $m$ is the demand multiplier. Multipliers must be unique, positive and include baseline 1.0.
+  most one. Here $w_t$ is the timing weight, $N$ is `arrival.expected_total_arrivals`, and $m$ is the demand multiplier. Multipliers must be unique, positive and include baseline 1.0.
 - The three generated inputs are the price grid bounds, WTP parameters and
   arrival weights. There are no seed, repetition or accuracy settings.
 
