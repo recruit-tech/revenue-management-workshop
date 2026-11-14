@@ -1,11 +1,11 @@
 capacity: 10
 input_source: synthetic
 leadtime: 60
-mt_multiplier:
+lambda_multiplier:
 - 0.6
 - 1.0
 - 1.2
-people: 18
+expected_total_arrivals: 18
 price_interval: 1000
 scenario: pricing_demo
 workflow: pricing-workshop-v1

@@ -21,23 +21,40 @@ class SyntheticTests(unittest.TestCase):
         config, models = build_parameters(self.scenario)
         self.assertEqual(set(models), {'opt_table_params', 'wtp_parameters', 'visit_curve'})
         self.assertEqual(config['workflow'], 'pricing-workshop-v1')
-        self.assertEqual(set(config), {'leadtime', 'capacity', 'people', 'price_interval',
-                                      'mt_multiplier', 'input_source', 'scenario', 'workflow'})
+        self.assertEqual(set(config), {'leadtime', 'capacity', 'expected_total_arrivals', 'price_interval',
+                                      'lambda_multiplier', 'input_source', 'scenario', 'workflow'})
         weights = models['visit_curve'].visit.to_numpy()
         self.assertAlmostEqual(weights.sum(), 1)
         self.assertEqual(len(weights), self.scenario['leadtime'] + 1)
-        for multiplier in config['mt_multiplier']:
-            probabilities = weights * config['people'] * multiplier
+        for multiplier in config['lambda_multiplier']:
+            probabilities = weights * config['expected_total_arrivals'] * multiplier
             self.assertTrue(((probabilities >= 0) & (probabilities <= 1)).all())
-            self.assertAlmostEqual(probabilities.sum(), config['people'] * multiplier)
+            self.assertAlmostEqual(probabilities.sum(), config['expected_total_arrivals'] * multiplier)
 
     def test_invalid_inputs_are_rejected(self):
-        for change in ({'people': 1000}, {'mt_multiplier': [1.0, 1.0]},
-                       {'mt_multiplier': [0.6]}, {'capacity': 0}, {'simulation_num': 100}):
+        for section, key, value in (
+            ('arrival', 'expected_total_arrivals', 1000), ('arrival', 'lambda_multiplier', [1.0, 1.0]),
+            ('arrival', 'lambda_multiplier', [0.6]), ('price', 'price_interval', 0),
+            ('price', 'price_interval', 1.5), ('arrival', 'unknown', 1),
+            (None, 'capacity', 0), (None, 'simulation_num', 100),
+            (None, 'expected_total_arrivals', 18), (None, 'lambda_multiplier', [1.0]),
+            (None, 'price_interval', 1000),
+        ):
             scenario = copy.deepcopy(self.scenario)
-            scenario.update(change)
-            with self.assertRaises(ValueError):
-                build_parameters(scenario)
+            target = scenario if section is None else scenario[section]
+            target[key] = value
+            with self.subTest(section=section, key=key, value=value):
+                with self.assertRaises(ValueError):
+                    build_parameters(scenario)
+
+    def test_nested_parameters_reach_runtime(self):
+        self.scenario['arrival'].update(expected_total_arrivals=12, lambda_multiplier=[0.5, 1.0])
+        self.scenario['price']['price_interval'] = 500
+        config, models = build_parameters(self.scenario)
+        self.assertEqual(config['expected_total_arrivals'], 12)
+        self.assertEqual(config['lambda_multiplier'], [0.5, 1.0])
+        self.assertEqual(config['price_interval'], 500)
+        self.assertEqual(models['opt_table_params'], [5000, 35000, 500])
 
     def test_workspace_uses_only_allowed_sources(self):
         with tempfile.TemporaryDirectory() as directory:

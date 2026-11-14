@@ -22,20 +22,27 @@ def _number(value, name, lower=0, upper=np.inf, integer=False, positive=False):
 def build_parameters(scenario):
     """Return the runtime configuration and three deterministic pricing inputs."""
     s = scenario
-    required = {'name', 'leadtime', 'capacity', 'people', 'price_interval',
-                'mt_multiplier', 'wtp', 'price', 'arrival'}
+    required = {'name', 'leadtime', 'capacity', 'wtp', 'price', 'arrival'}
     if set(s) != required:
         raise ValueError(f'Scenario fields must be exactly: {sorted(required)}')
-    for key in ('leadtime', 'capacity', 'price_interval'):
+    for section, fields in {
+        'wtp': {'mean', 'std'},
+        'price': {'min', 'max', 'price_interval'},
+        'arrival': {'expected_total_arrivals', 'lambda_multiplier', 'log_mean', 'log_std'},
+    }.items():
+        if not isinstance(s[section], dict) or set(s[section]) != fields:
+            raise ValueError(f'{section} fields must be exactly: {sorted(fields)}')
+    for key in ('leadtime', 'capacity'):
         _number(s[key], key, integer=True, positive=True)
-    _number(s['people'], 'people', positive=True)
-    multipliers = s['mt_multiplier']
+    _number(s['arrival']['expected_total_arrivals'], 'arrival.expected_total_arrivals', positive=True)
+    _number(s['price']['price_interval'], 'price.price_interval', integer=True, positive=True)
+    multipliers = s['arrival']['lambda_multiplier']
     if not isinstance(multipliers, list) or not multipliers:
-        raise ValueError('mt_multiplier must be a non-empty list')
+        raise ValueError('lambda_multiplier must be a non-empty list')
     for value in multipliers:
-        _number(value, 'mt_multiplier', positive=True)
+        _number(value, 'lambda_multiplier', positive=True)
     if 1.0 not in multipliers or len(set(multipliers)) != len(multipliers):
-        raise ValueError('mt_multiplier must be unique and include baseline 1.0')
+        raise ValueError('lambda_multiplier must be unique and include baseline 1.0')
     mu = _number(s['wtp']['mean'], 'wtp.mean', positive=True)
     sigma = _number(s['wtp']['std'], 'wtp.std', positive=True)
     low = _number(s['price']['min'], 'price.min', positive=True, integer=True)
@@ -49,12 +56,15 @@ def build_parameters(scenario):
     if not np.isfinite(weights.sum()) or weights.sum() <= 0:
         raise ValueError('Arrival distribution has no representable mass in the horizon')
     weights /= weights.sum()
-    if weights.max() * s['people'] * max(multipliers) > 1:
-        raise ValueError('Arrival probability exceeds 1; reduce people/multipliers or broaden the arrival curve')
-    config = {key: s[key] for key in ('leadtime', 'capacity', 'people', 'price_interval', 'mt_multiplier')}
+    if weights.max() * s['arrival']['expected_total_arrivals'] * max(multipliers) > 1:
+        raise ValueError('Arrival probability exceeds 1; reduce expected_total_arrivals/multipliers or broaden the arrival curve')
+    # Flatten the scenario settings for the generated workshop configuration.
+    config = {key: s[key] for key in ('leadtime', 'capacity')}
+    config.update(expected_total_arrivals=s['arrival']['expected_total_arrivals'], lambda_multiplier=multipliers,
+                  price_interval=s['price']['price_interval'])
     config.update(input_source='synthetic', scenario=s['name'], workflow='pricing-workshop-v1')
     models = {
-        'opt_table_params': [low, high, s['price_interval']],
+        'opt_table_params': [low, high, s['price']['price_interval']],
         'wtp_parameters': [mu, sigma],
         'visit_curve': pd.DataFrame({'visit': weights}),
     }

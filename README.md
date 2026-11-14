@@ -157,24 +157,25 @@ It has no event prediction or booking-reversal model. An accepted sale is final.
 
 Prices use arbitrary currency units. Arrivals are Bernoulli opportunities, at most one per day; invalid probabilities are rejected rather than clipped.
 
-The scenario schema contains only `name`, `leadtime`, `capacity`, `people`,
-`price_interval`, `mt_multiplier`, `wtp`, `price` and `arrival`. Unexpected top-level
+The scenario schema contains only `name`, `leadtime`, `capacity`, `wtp`, `price` and `arrival`. Unexpected top-level
 fields are rejected so that obsolete configuration is not silently ignored.
 
 - `wtp.mean` and `wtp.std` define normally distributed willingness to pay.
-- `price.min`, `price.max` and `price_interval` define an integer price grid with
+- `price.min`, `price.max` and `price.price_interval` define an integer price grid with
   an exclusive upper bound. The lowest price wins a tie.
 - `arrival.log_mean` and `arrival.log_std` define a lognormal arrival-time variable.
   Daily mass integrates intervals $[t,t+1)$, then normalises over the horizon.
-- `people` is the expected number of potential arrivals at demand multiplier 1.
+- `arrival.expected_total_arrivals` is the expected number of potential arrivals at demand multiplier 1.
 - Daily arrival probability is $a_t = w_t N m$, and must be at
-  most one. Here $w_t$ is the timing weight, $N$ is `people`, and $m$ is the demand multiplier. Multipliers must be unique, positive and include baseline 1.0.
+  most one. Here $w_t$ is the timing weight, $N$ is `arrival.expected_total_arrivals`, and $m$ is the demand multiplier. Multipliers must be unique, positive and include baseline 1.0.
 - The three generated inputs are the price grid bounds, WTP parameters and
   arrival weights. There are no seed, repetition or accuracy settings.
 
 The normal WTP model is not truncated; a negative WTP does not accept positive
 prices. Arrival timing, WTP and price acceptance follow the stated exogenous
 assumptions. Accepted bookings also depend on room availability.
+
+Scenario demand multipliers are set in `arrival.lambda_multiplier`. Generated `config.yaml` uses the same `lambda_multiplier` name in its flat runtime format. Regenerate existing workspaces to update their configuration and notebooks.
 
 ### Optimal pricing
 

@@ -2,9 +2,6 @@
 name: pricing_demo  # Scenario label.
 leadtime: 60  # Days before check-in; includes day 0 (61 selling periods).
 capacity: 10  # Total rooms; each sale consumes one room.
-people: 18  # Expected potential arrivals over the whole horizon at demand x 1.
-price_interval: 1000  # Step between candidate prices.
-mt_multiplier: [0.6, 1.0, 1.2]  # Demand multipliers; unique, positive, including 1.0.
 
 # Normally distributed willingness to pay (WTP).
 wtp:
@@ -12,11 +9,16 @@ wtp:
   std: 6000  # Standard deviation of WTP.
 
 price:
+  price_interval: 1000  # Step between candidate prices.
   min: 5000  # Lowest candidate price (included).
   max: 35000  # Upper bound (excluded); highest candidate here is 34000.
 
 # Lognormal arrival timing; daily weights are normalised within the horizon.
-# Daily arrival probability = weight * people * multiplier; must not exceed 1.
+# Daily arrival probability = weight * expected_total_arrivals * multiplier; must not exceed 1.
 arrival:
+  # Expected potential customers over the whole booking horizon at demand x 1, not bookings.
+  # Arrival timing distributes them across days; price acceptance and availability determine bookings.
+  expected_total_arrivals: 18
+  lambda_multiplier: [0.6, 1.0, 1.2]  # Demand multipliers; unique, positive, including 1.0.
   log_mean: 3.0  # Mean of log(lead time), not days; larger means earlier arrivals.
   log_std: 0.8  # Standard deviation of log(lead time), not days.
