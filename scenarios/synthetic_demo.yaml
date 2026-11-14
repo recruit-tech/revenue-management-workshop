@@ -1,16 +1,22 @@
-# Invented assumptions for a deterministic hotel pricing workshop.
-name: pricing_demo
-leadtime: 60
-capacity: 10
-people: 18
-price_interval: 1000
-mt_multiplier: [0.6, 1.0, 1.2]
+# Invented hotel-pricing scenario; prices and WTP use the same currency units.
+name: pricing_demo  # Scenario label.
+leadtime: 60  # Days before check-in; includes day 0 (61 selling periods).
+capacity: 10  # Total rooms; each sale consumes one room.
+people: 18  # Expected potential arrivals over the whole horizon at demand x 1.
+price_interval: 1000  # Step between candidate prices.
+mt_multiplier: [0.6, 1.0, 1.2]  # Demand multipliers; unique, positive, including 1.0.
+
+# Normally distributed willingness to pay (WTP).
 wtp:
-  mean: 18000
-  std: 6000
+  mean: 18000  # Average WTP.
+  std: 6000  # Standard deviation of WTP.
+
 price:
-  min: 5000
-  max: 35000  # Exclusive upper bound.
+  min: 5000  # Lowest candidate price (included).
+  max: 35000  # Upper bound (excluded); highest candidate here is 34000.
+
+# Lognormal arrival timing; daily weights are normalised within the horizon.
+# Daily arrival probability = weight * people * multiplier; must not exceed 1.
 arrival:
-  log_mean: 3.0
-  log_std: 0.8
+  log_mean: 3.0  # Mean of log(lead time), not days; larger means earlier arrivals.
+  log_std: 0.8  # Standard deviation of log(lead time), not days.
