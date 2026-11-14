@@ -32,12 +32,29 @@ class SyntheticTests(unittest.TestCase):
             self.assertAlmostEqual(probabilities.sum(), config['people'] * multiplier)
 
     def test_invalid_inputs_are_rejected(self):
-        for change in ({'people': 1000}, {'mt_multiplier': [1.0, 1.0]},
-                       {'mt_multiplier': [0.6]}, {'capacity': 0}, {'simulation_num': 100}):
+        for section, key, value in (
+            ('arrival', 'people', 1000), ('arrival', 'mt_multiplier', [1.0, 1.0]),
+            ('arrival', 'mt_multiplier', [0.6]), ('price', 'price_interval', 0),
+            ('price', 'price_interval', 1.5), ('arrival', 'unknown', 1),
+            (None, 'capacity', 0), (None, 'simulation_num', 100),
+            (None, 'people', 18), (None, 'mt_multiplier', [1.0]),
+            (None, 'price_interval', 1000),
+        ):
             scenario = copy.deepcopy(self.scenario)
-            scenario.update(change)
-            with self.assertRaises(ValueError):
-                build_parameters(scenario)
+            target = scenario if section is None else scenario[section]
+            target[key] = value
+            with self.subTest(section=section, key=key, value=value):
+                with self.assertRaises(ValueError):
+                    build_parameters(scenario)
+
+    def test_nested_parameters_reach_runtime(self):
+        self.scenario['arrival'].update(people=12, mt_multiplier=[0.5, 1.0])
+        self.scenario['price']['price_interval'] = 500
+        config, models = build_parameters(self.scenario)
+        self.assertEqual(config['people'], 12)
+        self.assertEqual(config['mt_multiplier'], [0.5, 1.0])
+        self.assertEqual(config['price_interval'], 500)
+        self.assertEqual(models['opt_table_params'], [5000, 35000, 500])
 
     def test_workspace_uses_only_allowed_sources(self):
         with tempfile.TemporaryDirectory() as directory:
